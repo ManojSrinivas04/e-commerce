@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Store Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <div class="logo">My E-Store</div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="cart.html">Cart (<span id="cart-count">0</span>)</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Our Products</h2>
+        
+        <section id="product-grid">
+            
+            <div class="product-card">
+                <img src="images/tshirt.jpg" alt="A Blue t-shirt">
+                <h3>T-shirt</h3>
+                <p class="price">Rs 999.00</p>
+                <button class="add-to-cart-btn" data-id="1">Add to Cart</button>
+                <img src="images/jeans.jpg" alt="Baggy Jeans">
+                <h3>Jeans</h3>
+                <p class="price">Rs 1999.00</p>
+                <button class="add-to-cart-btn" data-id="1">Add to Cart</button>
+                <img src="images/hat.jpg" alt="Cowboy Hat">
+                <h3>Hat</h3>
+                <p class="price">Rs 499.00</p>
+                <button class="add-to-cart-btn" data-id="1">Add to Cart</button>
+                <img src="images/watch.jpg" alt="Luxury Watch">
+                <h3>Watch</h3>
+                <p class="price">Rs 9999.00</p>
+                <button class="add-to-cart-btn" data-id="1">Add to Cart</button>
+                
+            </div>
+
+            </section>
+    </main>
+
+    <script src="script.js" defer></script>
+</body>
+</html>

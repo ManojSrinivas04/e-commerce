@@ -1,0 +1,236 @@
+/* --- Global & Body Styles --- */
+* {
+    /* A good default that makes sizing easier */
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+main {
+    /* Adds some space from the nav and page edges */
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1, h2, h3 {
+    margin-bottom: 10px;
+}
+
+img {
+    max-width: 100%; /* Ensures images are responsive */
+    height: auto;
+}
+
+/* --- Header & Navigation --- */
+header {
+    background-color: #fff;
+    padding: 15px 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between; /* Pushes logo and links to opposite ends */
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+nav ul {
+    list-style-type: none;
+    display: flex;
+    gap: 20px; /* Space between nav items */
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #555;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    color: #007bff;
+}
+
+/* --- Product Grid (The Key Skill) --- */
+#product-grid {
+    display: grid;
+    /* This is the powerful part:
+      - 'repeat()': Repeats the column pattern.
+      - 'auto-fit': Automatically fits as many columns as possible.
+      - 'minmax(250px, 1fr)': Columns will be a *minimum* of 250px.
+        If there's extra space, they will *all grow equally* (1fr).
+      This one line makes your grid fully responsive!
+    */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px; /* Space between the grid items */
+}
+
+/* --- Product Card Styling --- */
+.product-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.product-card .price {
+    color: #007bff;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 10px 0;
+}
+
+/* --- Button Styling (Reusable) --- */
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* --- Cart Page Specifics --- */
+#cart-total {
+    margin-top: 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: right;
+}
+
+#checkout-btn {
+    display: block; /* Makes it take its own line */
+    width: 100%;
+    max-width: 300px;
+    margin: 20px auto 0; /* 'auto' for left/right centers it */
+    padding: 12px;
+    font-size: 1.2rem;
+}
+
+/* --- Cart Page Item Styling (NEW) --- */
+.cart-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.cart-item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover; /* Prevents image from stretching */
+    border-radius: 5px;
+    margin-right: 15px;
+}
+
+.cart-item-details {
+    flex-grow: 1; /* Takes up the available space */
+}
+
+.cart-item-total {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 0 20px;
+}
+
+.remove-from-cart-btn {
+    background-color: #dc3545; /* A red color */
+    font-size: 0.9rem;
+    padding: 8px 12px;
+}
+
+.remove-from-cart-btn:hover {
+    background-color: #c82333;
+}
+
+/* --- Auth Page Styles (NEW) --- */
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 50px;
+}
+
+.auth-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.btn-auth {
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745; /* A nice green */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.btn-auth:hover {
+    background-color: #218838;
+}
+
+#auth-message {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}
