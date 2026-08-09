@@ -4,11 +4,25 @@ const router = express.Router();
 
 const {
     createProduct,
-    getProducts
+    getProducts,
+    getProductById,
+    updateProduct,
+    deleteProduct
 } = require("../controllers/productController");
 
-router.post("/", createProduct);
+const protect = require("../middleware/authMiddleware");
+const adminOnly = require("../middleware/adminMiddleware");
 
+// Public routes
 router.get("/", getProducts);
+
+router.get("/:id", getProductById);
+
+// Admin-only routes
+router.post("/", protect, adminOnly, createProduct);
+
+router.put("/:id", protect, adminOnly, updateProduct);
+
+router.delete("/:id", protect, adminOnly, deleteProduct);
 
 module.exports = router;
