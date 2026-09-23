@@ -1,240 +1,249 @@
-# MERN E-Commerce Platform
 
-A full-stack e-commerce web application built using the MERN stack. The platform provides user authentication, JWT-based authorization, admin-only product management, shopping cart functionality, and order processing.
+# E-Commerce Platform
 
-The project uses a React + Vite frontend, a Node.js + Express REST API, and MongoDB Atlas with Mongoose.
-
----
+A full-stack e-commerce platform built with React, TypeScript, Node.js, Express.js, MongoDB, Redis, and Docker.
 
 ## Features
 
-### Authentication & Authorization
-- User registration and login
-- JWT-based authentication
-- Password hashing using bcrypt
-- Protected backend routes
-- Role-based authorization with `user` and `admin` roles
-- Axios authentication interceptor for protected requests
-- Authentication-aware navigation
-
-### Product Management
-- View all products
-- View individual products
-- Create products
-- Update products
-- Delete products
-- Admin-only product creation, update, and deletion
-- Product data stored in MongoDB
-
-### Shopping Cart
-- Add products to cart
-- View authenticated user's cart
-- Increase/decrease quantity
-- Remove products from cart
-- User-specific cart data
-- Automatic cart clearing after successful order placement
-
-### Orders
-- Place orders from the cart
-- Calculate order totals
-- Store purchased product prices
-- View authenticated user's order history
-- Order status support with `pending` as the initial status
-
-### Frontend
-- React-based UI
-- React Router navigation
-- Reusable product card component
-- Responsive styling
-- Login and registration pages
-- Product listing
+- JWT-based user authentication
+- Role-based authorization with admin access
+- Product management
 - Cart management
-- Order history
-- Loading and error handling
-
----
+- Order management
+- Product search
+- Category filtering
+- Price range filtering
+- Sorting
+- Pagination
+- Input validation using Joi
+- Centralized error handling
+- Redis caching for product queries
+- Redis cache invalidation after product changes
+- Dockerized frontend, backend, and Redis
+- Nginx-based production frontend serving
 
 ## Tech Stack
 
-| Layer | Technologies |
-|---|---|
-| Frontend | React.js, JavaScript, React Router, Axios, HTML5, CSS3, Vite |
-| Backend | Node.js, Express.js, REST APIs, JWT, bcrypt |
-| Database | MongoDB Atlas, Mongoose |
-| Tools | Git, GitHub, VS Code, PowerShell, Nodemon |
+### Frontend
+- React.js
+- TypeScript
+- React Router
+- Axios
+- Nginx
 
----
+### Backend
+- Node.js
+- Express.js
+- JWT
+- bcrypt
+- Joi
+- Mongoose
 
-## System Architecture
+### Database & Caching
+- MongoDB Atlas
+- Redis
 
-```text
-                         ┌─────────────────────────┐
-                         │     React Frontend      │
-                         │      Vite + React       │
-                         │      localhost:5173     │
-                         └────────────┬────────────┘
-                                      │
-                               Axios / HTTP
-                                      │
-                                      ▼
-                         ┌─────────────────────────┐
-                         │    Express.js API       │
-                         │     localhost:3001      │
-                         │                         │
-                         │ Routes                  │
-                         │ Controllers             │
-                         │ Middleware              │
-                         └────────────┬────────────┘
-                                      │
-                                  Mongoose
-                                      │
-                                      ▼
-                         ┌─────────────────────────┐
-                         │      MongoDB Atlas      │
-                         │                         │
-                         │ Users                   │
-                         │ Products                │
-                         │ Carts                   │
-                         │ Orders                  │
-                         └─────────────────────────┘
-```
+### DevOps
+- Docker
+- Docker Compose
 
-### Local Development URLs
+## Architecture
 
 ```text
-Frontend:  http://localhost:5173
-Backend:   http://localhost:3001
-API Base:  http://localhost:3001/api
-```
+                    ┌─────────────────┐
+                    │     Browser     │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │ Nginx / React   │
+                    │    Frontend     │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │    Express.js   │
+                    │     Backend     │
+                    └───────┬─┬───────┘
+                            │ │
+                 ┌──────────┘ └──────────┐
+                 ▼                       ▼
+          ┌──────────────┐        ┌──────────────┐
+          │   MongoDB    │        │    Redis     │
+          │    Atlas     │        │    Cache     │
+          └──────────────┘        └──────────────┘
+Application Flow
+User
+ │
+ ▼
+React Frontend
+ │
+ ▼
+Axios API Request
+ │
+ ▼
+Express.js Backend
+ │
+ ├── Authentication / Authorization
+ │
+ ├── Input Validation
+ │
+ ├── Controller
+ │
+ ├── Redis Cache
+ │
+ └── MongoDB
+ │
+ ▼
+API Response
+ │
+ ▼
+React Frontend
+API Features
 
----
+The backend provides RESTful APIs for:
 
-## Authentication Flow
+Authentication
+Products
+Cart
+Orders
 
-```text
-┌───────────────┐
-│     Login     │
-└───────┬───────┘
-        │
-        ▼
-┌───────────────────────┐
-│ Auth Controller       │
-│ Verify email/password │
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ bcrypt verification   │
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ JWT generated         │
-│ ID + role + expiry    │
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ Frontend stores token │
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ Axios adds            │
-│ Bearer token          │
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ Auth Middleware       │
-│ Verifies JWT          │
-└──────────┬────────────┘
-           │
-           ▼
-┌───────────────────────┐
-│ Protected API Route   │
-└───────────────────────┘
-```
+Product APIs support:
 
----
+Search
+Category filtering
+Price filtering
+Sorting
+Pagination
+Authentication & Authorization
 
-## Application Workflow
+The application uses JWT-based authentication.
 
-```text
-Register
-   │
-   ▼
-Login
-   │
-   ▼
-JWT Authentication
-   │
-   ▼
-Browse Products
-   │
-   ▼
-Add Product to Cart
-   │
-   ▼
-Update / Remove Cart Items
-   │
-   ▼
-Place Order
-   │
-   ▼
-Order Saved in MongoDB
-   │
-   ▼
-Cart Automatically Cleared
-   │
-   ▼
-View Order History
-   │
-   ▼
-Logout
-```
-
-### Admin Workflow
-
-```text
-Admin Login
+User Login
     │
     ▼
-JWT Contains Admin Role
+Credentials Verified
     │
     ▼
-Admin Authorization Middleware
+JWT Token Generated
     │
-    ├───────────────┬────────────────┐
-    ▼               ▼                ▼
-Create Product   Update Product   Delete Product
-    │               │                │
-    └───────────────┴────────────────┘
+    ▼
+Token Stored by Client
+    │
+    ▼
+Token Sent with API Requests
+    │
+    ▼
+Authentication Middleware
+    │
+    ▼
+Authorized Request
+
+The application also implements role-based authorization, allowing admin-only operations such as product creation, updating, and deletion.
+
+Redis Caching
+
+Product listing requests use a cache-aside strategy.
+
+Request
+   │
+   ▼
+Check Redis
+   │
+   ├── Cache HIT ──► Return cached data
+   │
+   └── Cache MISS
+          │
+          ▼
+      Query MongoDB
+          │
+          ▼
+      Store in Redis
+          │
+          ▼
+      Return response
+
+Product cache entries are invalidated when products are created, updated, or deleted.
+
+This reduces repeated database queries for frequently requested product data.
+
+Docker Setup
+
+The application consists of three Docker services:
+
+┌───────────────────────────────────────────┐
+│              Docker Compose               │
+│                                           │
+│  ┌─────────────┐   ┌─────────────┐       │
+│  │  Frontend   │   │   Backend   │       │
+│  │ React+Nginx │──►│ Node+Express│       │
+│  └─────────────┘   └──────┬──────┘       │
+│                           │              │
+│                    ┌──────▼──────┐       │
+│                    │    Redis    │       │
+│                    │    Cache    │       │
+│                    └─────────────┘       │
+└───────────────────────────────────────────┘
+
                     │
                     ▼
-               MongoDB Atlas
-```
+              MongoDB Atlas
 
----
+MongoDB is hosted externally using MongoDB Atlas.
 
-## Project Structure
+Running the Project
+Prerequisites
+Docker Desktop
+MongoDB Atlas account
+Environment Variables
 
-```text
-E-commerce/
+Create:
+
+backend/.env
+
+Add:
+
+MONGO_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_jwt_secret
+REDIS_URL=redis://localhost:6379
+PORT=3001
+
+Never commit .env files containing secrets.
+
+A template is provided in:
+
+backend/.env.example
+Start the Application
+
+From the project root:
+
+docker compose up --build
+
+The application will be available at:
+
+Frontend: http://localhost:5173
+Backend:  http://localhost:3001
+Stop the Application
+docker compose down
+Project Structure
+e-commerce/
 │
 ├── backend/
 │   ├── config/
-│   │   └── db.js
+│   │   ├── db.js
+│   │   └── redis.js
 │   │
 │   ├── controllers/
 │   │   ├── authController.js
-│   │   ├── productController.js
 │   │   ├── cartController.js
-│   │   └── orderController.js
+│   │   ├── orderController.js
+│   │   └── productController.js
 │   │
 │   ├── middleware/
+│   │   ├── adminMiddleware.js
 │   │   ├── authMiddleware.js
-│   │   └── adminMiddleware.js
+│   │   ├── errorMiddleware.js
+│   │   └── validate.js
 │   │
 │   ├── models/
 │   │   ├── User.js
@@ -244,405 +253,69 @@ E-commerce/
 │   │
 │   ├── routes/
 │   │   ├── authRoutes.js
-│   │   ├── productRoutes.js
 │   │   ├── cartRoutes.js
-│   │   └── orderRoutes.js
+│   │   ├── orderRoutes.js
+│   │   └── productRoutes.js
 │   │
-│   ├── .env
-│   ├── package.json
+│   ├── validators/
+│   │   ├── authValidator.js
+│   │   ├── cartValidator.js
+│   │   └── productValidator.js
+│   │
+│   ├── .env.example
+│   ├── .dockerignore
+│   ├── Dockerfile
 │   └── server.js
 │
 ├── frontend/
-│   ├── public/
-│   │
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── Navbar.jsx
-│   │   │   └── ProductCard.jsx
-│   │   │
 │   │   ├── pages/
-│   │   │   ├── Home.jsx
-│   │   │   ├── Login.jsx
-│   │   │   ├── Register.jsx
-│   │   │   ├── Cart.jsx
-│   │   │   └── Orders.jsx
-│   │   │
-│   │   ├── services/
-│   │   │   ├── api.js
-│   │   │   ├── authService.js
-│   │   │   ├── productService.js
-│   │   │   ├── cartService.js
-│   │   │   └── orderService.js
-│   │   │
-│   │   ├── assets/
-│   │   ├── App.jsx
-│   │   ├── App.css
-│   │   ├── index.css
-│   │   └── main.jsx
+│   │   └── services/
 │   │
-│   ├── eslint.config.js
-│   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
+│   ├── .dockerignore
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   └── tsconfig.json
 │
+├── docker-compose.yml
 ├── .gitignore
-├── package.json
-├── package-lock.json
 └── README.md
-```
+Key Concepts Implemented
+RESTful API design
+JWT authentication
+Role-based access control
+Password hashing with bcrypt
+Input validation
+Centralized error handling
+MongoDB database integration
+Mongoose ODM
+Search and filtering
+Pagination
+Sorting
+Redis cache-aside pattern
+Redis cache invalidation
+Docker containerization
+Docker Compose orchestration
+Nginx production serving
+React with TypeScript
+Security
+Passwords are hashed using bcrypt
+Authentication is handled using JWT
+Admin routes are protected using role-based authorization
+Request data is validated using Joi
+Environment variables are excluded from Git
+Sensitive credentials are not stored in the repository
+Future Improvements
+Payment gateway integration
+Product image upload
+Order status tracking
+Unit and integration testing
+CI/CD pipeline
+Cloud deployment
+Rate limiting
+API documentation using Swagger/OpenAPI
+Author
+
+Manoj D S
 
-> `backend/.env` is used only for local configuration and must not be committed to GitHub.
-
----
-
-# API Overview
-
-Base URL:
-
-```text
-http://localhost:3001/api
-```
-
-Protected endpoints use:
-
-```http
-Authorization: Bearer <JWT_TOKEN>
-```
-
-## Authentication
-
-| Method | Endpoint | Access |
-|---|---|---|
-| POST | `/auth/register` | Public |
-| POST | `/auth/login` | Public |
-| GET | `/auth/profile` | Authenticated |
-
-## Products
-
-| Method | Endpoint | Access |
-|---|---|---|
-| GET | `/products` | Public |
-| GET | `/products/:id` | Public |
-| POST | `/products` | Admin |
-| PUT | `/products/:id` | Admin |
-| DELETE | `/products/:id` | Admin |
-
-## Cart
-
-| Method | Endpoint | Access |
-|---|---|---|
-| GET | `/cart` | Authenticated |
-| POST | `/cart` | Authenticated |
-| PUT | `/cart/:productId` | Authenticated |
-| DELETE | `/cart/:productId` | Authenticated |
-
-## Orders
-
-| Method | Endpoint | Access |
-|---|---|---|
-| POST | `/orders` | Authenticated |
-| GET | `/orders` | Authenticated |
-
----
-
-# Database Design
-
-The application uses four main MongoDB collections.
-
-### User
-
-```text
-User
-├── name
-├── email
-├── password
-├── role
-└── timestamps
-```
-
-Roles:
-
-```text
-user
-admin
-```
-
-### Product
-
-```text
-Product
-├── name
-├── price
-├── category
-├── image
-├── stock
-└── timestamps
-```
-
-### Cart
-
-```text
-Cart
-├── user
-└── items
-    ├── product
-    └── quantity
-```
-
-### Order
-
-```text
-Order
-├── user
-├── items
-│   ├── product
-│   ├── quantity
-│   └── price
-├── totalAmount
-├── status
-└── timestamps
-```
-
-The order stores the product price at the time of purchase so that historical order pricing remains available even if the product price changes later.
-
----
-
-# Security
-
-The application implements:
-
-- **bcrypt password hashing** instead of storing plain-text passwords
-- **JWT authentication** for protected API requests
-- **Role-based authorization** for admin product operations
-- **Protected backend routes**
-- **Environment variables** for MongoDB credentials and JWT secrets
-- **User-specific cart and order access**
-
-Example environment configuration:
-
-```env
-MONGO_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=your_jwt_secret
-PORT=3001
-```
-
-Never commit the real `.env` file.
-
----
-
-# Getting Started
-
-## Prerequisites
-
-Install:
-
-- Node.js
-- npm
-- Git
-- MongoDB Atlas account
-- Visual Studio Code
-
----
-
-## 1. Clone the Repository
-
-```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
-cd E-commerce
-```
-
----
-
-## 2. Configure the Backend
-
-Navigate to the backend:
-
-```bash
-cd backend
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Create:
-
-```text
-backend/.env
-```
-
-Add:
-
-```env
-MONGO_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=your_jwt_secret
-PORT=3001
-```
-
-Replace the placeholder values with your actual MongoDB Atlas connection string and JWT secret.
-
----
-
-## 3. Start the Backend
-
-From the `backend` directory:
-
-```bash
-npm run dev
-```
-
-The backend runs on:
-
-```text
-http://localhost:3001
-```
-
----
-
-## 4. Configure and Start the Frontend
-
-Open a second terminal.
-
-From the project root:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-The frontend runs on:
-
-```text
-http://localhost:5173
-```
-
-Open the application:
-
-```text
-http://localhost:5173
-```
-
----
-
-## Running Both Servers
-
-### Terminal 1
-
-```bash
-cd backend
-npm run dev
-```
-
-### Terminal 2
-
-```bash
-cd frontend
-npm run dev
-```
-
-Then open:
-
-```text
-http://localhost:5173
-```
-
----
-
-# Frontend Routes
-
-| Route | Description |
-|---|---|
-| `/` | Product listing |
-| `/login` | Login |
-| `/register` | User registration |
-| `/cart` | Shopping cart |
-| `/orders` | User order history |
-
-Cart and Orders are intended for authenticated users. Backend authorization remains the primary security layer.
-
----
-
-# Testing
-
-The application can be tested end-to-end using the frontend:
-
-```text
-Register
-   ↓
-Login
-   ↓
-Browse Products
-   ↓
-Add to Cart
-   ↓
-Increase / Decrease Quantity
-   ↓
-Remove Items
-   ↓
-Place Order
-   ↓
-Cart Cleared
-   ↓
-View Orders
-   ↓
-Logout
-```
-
-Backend APIs can also be tested using:
-
-- Postman
-- PowerShell `Invoke-RestMethod`
-
----
-
-# Error Handling
-
-The backend handles common scenarios such as:
-
-- Invalid login credentials
-- Duplicate user registration
-- Missing or invalid JWT
-- Expired JWT
-- Unauthorized admin operations
-- Invalid product IDs
-- Product not found
-- Product not found in cart
-- Invalid cart quantities
-- Empty cart during checkout
-- MongoDB connection failures
-
----
-
-# Future Improvements
-
-Potential future enhancements:
-
-- Payment gateway integration
-- Product search and filtering
-- Product reviews and ratings
-- Wishlist functionality
-- Admin dashboard
-- Inventory management
-- Order status management UI
-- Pagination
-- Product image upload and cloud storage
-- Email notifications
-- Automated unit and integration tests
-- Production deployment
-
----
-
-# Author
-
-**Manoj Srinivas**
-
-Computer Science Engineering Student
-
----
-
-## License
-
-This project is developed for educational and portfolio purposes.
