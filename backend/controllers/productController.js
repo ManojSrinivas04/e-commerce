@@ -1,9 +1,25 @@
 const Product = require("../models/Product");
+const { redisClient } = require("../config/redis");
+
+const invalidateProductCache = async () => {
+    try {
+        for await (const key of redisClient.scanIterator({
+            MATCH: "products:*",
+            COUNT: 100
+        })) {
+            await redisClient.del(key);
+        }
+    } catch (error) {
+        console.error("Redis cache invalidation failed:", error);
+    }
+};
 
 // Create Product
 const createProduct = async (req, res) => {
     try {
         const product = await Product.create(req.body);
+
+        await invalidateProductCache();
 
         res.status(201).json({
             message: "Product created successfully",
@@ -18,12 +34,104 @@ const createProduct = async (req, res) => {
 };
 
 
-// Get All Products
+// Get Products
 const getProducts = async (req, res) => {
     try {
-        const products = await Product.find();
+        const {
+            search,
+            category,
+            minPrice,
+            maxPrice,
+            sort,
+            page = 1,
+            limit = 10
+        } = req.query;
 
-        res.status(200).json(products);
+        const cacheKey = `products:${JSON.stringify({
+            search: search || "",
+            category: category || "",
+            minPrice: minPrice || "",
+            maxPrice: maxPrice || "",
+            sort: sort || "",
+            page: Number(page),
+            limit: Number(limit)
+        })}`;
+
+        const cachedProducts = await redisClient.get(cacheKey);
+
+        if (cachedProducts) {
+            console.log("Redis Cache HIT");
+
+            return res.status(200).json(
+                JSON.parse(cachedProducts)
+            );
+        }
+
+        console.log("Redis Cache MISS");
+
+        const filter = {};
+
+        if (search) {
+            filter.name = {
+                $regex: search,
+                $options: "i"
+            };
+        }
+
+        if (category) {
+            filter.category = category;
+        }
+
+        if (minPrice || maxPrice) {
+            filter.price = {};
+
+            if (minPrice) {
+                filter.price.$gte = Number(minPrice);
+            }
+
+            if (maxPrice) {
+                filter.price.$lte = Number(maxPrice);
+            }
+        }
+
+        let query = Product.find(filter);
+
+        if (sort === "price") {
+            query = query.sort({ price: 1 });
+        }
+
+        if (sort === "-price") {
+            query = query.sort({ price: -1 });
+        }
+
+        const skip =
+            (Number(page) - 1) * Number(limit);
+
+        const products = await query
+            .skip(skip)
+            .limit(Number(limit));
+
+        const totalProducts =
+            await Product.countDocuments(filter);
+
+        const responseData = {
+            products,
+            currentPage: Number(page),
+            totalPages: Math.ceil(
+                totalProducts / Number(limit)
+            ),
+            totalProducts
+        };
+
+        await redisClient.set(
+            cacheKey,
+            JSON.stringify(responseData),
+            {
+                EX: 60
+            }
+        );
+
+        res.status(200).json(responseData);
 
     } catch (error) {
         res.status(500).json({
@@ -72,6 +180,8 @@ const updateProduct = async (req, res) => {
             });
         }
 
+        await invalidateProductCache();
+
         res.status(200).json({
             message: "Product updated successfully",
             product
@@ -84,16 +194,21 @@ const updateProduct = async (req, res) => {
     }
 };
 
+
 // Delete Product
 const deleteProduct = async (req, res) => {
     try {
-        const product = await Product.findByIdAndDelete(req.params.id);
+        const product = await Product.findByIdAndDelete(
+            req.params.id
+        );
 
         if (!product) {
             return res.status(404).json({
                 message: "Product not found"
             });
         }
+
+        await invalidateProductCache();
 
         res.status(200).json({
             message: "Product deleted successfully"
@@ -105,6 +220,7 @@ const deleteProduct = async (req, res) => {
         });
     }
 };
+
 
 module.exports = {
     createProduct,

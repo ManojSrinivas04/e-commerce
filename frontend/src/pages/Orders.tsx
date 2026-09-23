@@ -1,8 +1,30 @@
 import { useEffect, useState } from "react";
 import { getMyOrders } from "../services/orderService";
 
+interface Product {
+    _id: string;
+    name: string;
+    price: number;
+    category: string;
+    image: string;
+    stock: number;
+}
+
+interface OrderItem {
+    product?: Product;
+    quantity: number;
+    price: number;
+}
+
+interface Order {
+    _id: string;
+    items: OrderItem[];
+    totalAmount: number;
+    status: string;
+}
+
 function Orders() {
-    const [orders, setOrders] = useState([]);
+    const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -32,11 +54,17 @@ function Orders() {
                 <p>You haven't placed any orders yet.</p>
             ) : (
                 orders.map((order) => (
-                    <div className="order-card" key={order._id}>
-                        <h3>Order #{order._id.slice(-6)}</h3>
+                    <div
+                        className="order-card"
+                        key={order._id}
+                    >
+                        <h3>
+                            Order #{order._id.slice(-6)}
+                        </h3>
 
                         <p>
-                            Status: <strong>{order.status}</strong>
+                            Status:{" "}
+                            <strong>{order.status}</strong>
                         </p>
 
                         <p>
@@ -48,9 +76,9 @@ function Orders() {
                         {order.items.map((item, index) => (
                             <div key={index}>
                                 <p>
-                                    {item.product?.name || "Product"} —
-                                    Quantity: {item.quantity} —
-                                    ₹{item.price}
+                                    {item.product?.name || "Product"}{" "}
+                                    — Quantity: {item.quantity}{" "}
+                                    — ₹{item.price}
                                 </p>
                             </div>
                         ))}

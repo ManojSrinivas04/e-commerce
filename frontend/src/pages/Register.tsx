@@ -7,7 +7,9 @@ function Register() {
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
 
-    const handleRegister = async (e) => {
+    const handleRegister = async (
+        e: React.FormEvent<HTMLFormElement>
+    ) => {
         e.preventDefault();
 
         try {
@@ -23,9 +25,10 @@ function Register() {
             setEmail("");
             setPassword("");
 
-        } catch (error) {
+        } catch (error: any) {
             setMessage(
-                error.response?.data?.message || "Registration failed"
+                error.response?.data?.message ||
+                "Registration failed"
             );
         }
     };
@@ -43,7 +46,8 @@ function Register() {
                     required
                 />
 
-                <br /><br />
+                <br />
+                <br />
 
                 <input
                     type="email"
@@ -53,7 +57,8 @@ function Register() {
                     required
                 />
 
-                <br /><br />
+                <br />
+                <br />
 
                 <input
                     type="password"
@@ -63,7 +68,8 @@ function Register() {
                     required
                 />
 
-                <br /><br />
+                <br />
+                <br />
 
                 <button type="submit">
                     Register

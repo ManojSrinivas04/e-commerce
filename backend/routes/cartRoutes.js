@@ -1,3 +1,9 @@
+const validate = require("../middleware/validate");
+const {
+    addToCartSchema,
+    updateCartSchema
+} = require("../validators/cartValidator");
+
 const express = require("express");
 
 const router = express.Router();
@@ -11,11 +17,11 @@ const {
 
 const protect = require("../middleware/authMiddleware");
 
-router.post("/", protect, addToCart);
+router.post("/", protect, validate(addToCartSchema), addToCart);
 
 router.get("/", protect, getCart);
 
-router.put("/:productId", protect, updateCartItem);
+router.put("/:productId", protect, validate(updateCartSchema), updateCartItem);
 
 router.delete("/:productId", protect, removeFromCart);
 

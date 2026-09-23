@@ -1,4 +1,13 @@
+const validate = require("../middleware/validate");
+const {
+    registerSchema,
+    loginSchema
+} = require("../validators/authValidator");
+
+
 const express = require("express");
+
+
 
 const router = express.Router();
 
@@ -9,9 +18,8 @@ const {
 
 const protect = require("../middleware/authMiddleware");
 
-router.post("/register", registerUser);
-
-router.post("/login", loginUser);
+router.post("/register", validate(registerSchema), registerUser);
+router.post("/login", validate(loginSchema), loginUser);
 
 router.get("/profile", protect, (req, res) => {
     res.status(200).json({

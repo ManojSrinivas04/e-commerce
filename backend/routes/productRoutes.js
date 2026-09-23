@@ -1,3 +1,6 @@
+const validate = require("../middleware/validate");
+const { productSchema } = require("../validators/productValidator");
+
 const express = require("express");
 
 const router = express.Router();
@@ -19,9 +22,8 @@ router.get("/", getProducts);
 router.get("/:id", getProductById);
 
 // Admin-only routes
-router.post("/", protect, adminOnly, createProduct);
-
-router.put("/:id", protect, adminOnly, updateProduct);
+router.post("/", protect, adminOnly, validate(productSchema), createProduct);
+router.put("/:id", protect, adminOnly, validate(productSchema), updateProduct);
 
 router.delete("/:id", protect, adminOnly, deleteProduct);
 

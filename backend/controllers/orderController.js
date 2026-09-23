@@ -15,6 +15,20 @@ const createOrder = async (req, res) => {
             });
         }
 
+        for (const item of cart.items) {
+            if (!item.product) {
+                return res.status(404).json({
+                    message: "Product not found"
+                });
+            }
+
+            if (item.quantity > item.product.stock) {
+                return res.status(400).json({
+                    message: `Insufficient stock for ${item.product.name}`
+                });
+            }
+        }
+
         let totalAmount = 0;
 
         const orderItems = cart.items.map(item => {
@@ -25,7 +39,7 @@ const createOrder = async (req, res) => {
             return {
                 product: item.product._id,
                 quantity: item.quantity,
-                price: price
+                price
             };
         });
 
@@ -35,7 +49,17 @@ const createOrder = async (req, res) => {
             totalAmount
         });
 
-        // Clear cart after order
+        for (const item of cart.items) {
+            await Product.findByIdAndUpdate(
+                item.product._id,
+                {
+                    $inc: {
+                        stock: -item.quantity
+                    }
+                }
+            );
+        }
+
         cart.items = [];
         await cart.save();
 
@@ -69,7 +93,70 @@ const getMyOrders = async (req, res) => {
 };
 
 
+
+const getAllOrders = async (req, res) => {
+    try {
+        const orders = await Order.find()
+            .populate("user", "name email")
+            .populate("items.product");
+
+        res.status(200).json(orders);
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
+const updateOrderStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+
+        const validStatuses = [
+            "pending",
+            "confirmed",
+            "shipped",
+            "delivered",
+            "cancelled"
+        ];
+
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({
+                message: "Invalid order status"
+            });
+        }
+
+        const order = await Order.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        if (!order) {
+            return res.status(404).json({
+                message: "Order not found"
+            });
+        }
+
+        res.status(200).json({
+            message: "Order status updated successfully",
+            order
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+};
+
 module.exports = {
     createOrder,
-    getMyOrders
+    getMyOrders,
+    getAllOrders,
+    updateOrderStatus
 };

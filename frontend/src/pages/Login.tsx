@@ -6,7 +6,7 @@ function Login() {
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
 
-    const handleLogin = async (e) => {
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         try {
@@ -16,16 +16,21 @@ function Login() {
             });
 
             localStorage.setItem("token", response.data.token);
+
             localStorage.setItem(
                 "user",
                 JSON.stringify(response.data.user)
             );
 
+            // Tell Navbar that login happened
+            window.dispatchEvent(new Event("authChange"));
+
             setMessage("Login successful!");
 
-        } catch (error) {
+        } catch (error: any) {
             setMessage(
-                error.response?.data?.message || "Login failed"
+                error.response?.data?.message ||
+                "Login failed"
             );
         }
     };
@@ -43,7 +48,8 @@ function Login() {
                     required
                 />
 
-                <br /><br />
+                <br />
+                <br />
 
                 <input
                     type="password"
@@ -53,7 +59,8 @@ function Login() {
                     required
                 />
 
-                <br /><br />
+                <br />
+                <br />
 
                 <button type="submit">
                     Login
